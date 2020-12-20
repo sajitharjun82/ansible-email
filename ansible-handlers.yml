@@ -1,0 +1,53 @@
+---
+
+- name: "Wordpress Installation - Amazon Linux 2"
+  hosts: all
+  become: yes
+  vars_files:
+    - apache.vars
+    
+  tasks:
+    
+    - name: "Apache - Installing Apache & Php"
+      yum:
+        name:
+          - httpd
+          - php
+          - php-mysql
+        state: present
+    - name: collect facts about system services     
+      service_facts:
+      register: services_state 
+    
+    - name: "Apache - Creating DocumentRoot"
+      file:
+        path: "/var/www/html/{{ httpd_domain }}"
+        state: directory 
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+        
+            
+    - name: "Apache - Creating test.html & test.php"
+      copy:
+        src: "{{ item }}"
+        dest: "/var/www/html/{{ httpd_domain }}/"
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+      with_items:
+        - test.php
+        - test.html
+    - name: "Apache status"
+      debug: 
+        var: package_status
+        
+    - name: Debug
+      debug:
+        var: services_state     
+
+    - name: checking service status
+      command: systemctl status httpd
+      register: result
+      ignore_errors: yes
+    - name: showing report
+      debug:
+        var: result
