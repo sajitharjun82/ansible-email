@@ -41,9 +41,9 @@
       mail:
        host: smtp.gmail.com
        port: 587
-       username: "sajitharjun82@gmail.com"
-       password: "12a4GxjBvc][RX"
-       to: "prathyukprathap@gmail.com"
+       username: "xxxxxxxxxxxx"
+       password: "xxxxxxxxxxxx"
+       to: "xxxxxxxxxxxxx"
        subject: Apache-status
        body: " Apache is down"
       delegate_to: localhost
