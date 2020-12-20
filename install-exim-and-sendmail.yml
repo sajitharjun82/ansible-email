@@ -1,0 +1,49 @@
+---
+
+- name: "Wordpress Installation - Amazon Linux 2"
+  hosts: all
+  become: yes
+  vars_files:
+    - apache.vars
+    
+  tasks:
+    
+    - name: "Apache - Installing Apache & Php"
+      yum:
+        name:
+          - httpd
+          - php
+          - php-mysql
+          - exim
+        state: present
+      register: status
+    - name: "Apache - Creating DocumentRoot"
+      file:
+        path: "/var/www/html/{{ httpd_domain }}"
+        state: directory 
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+        
+            
+    - name: "Apache - Creating test.html & test.php"
+      copy:
+        src: "{{ item }}"
+        dest: "/var/www/html/{{ httpd_domain }}/"
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+      with_items:
+        - test.php
+        - test.html
+        
+
+    - name: "Send email"
+      when: status.rc == 0
+      mail:
+       host: smtp.gmail.com
+       port: 587
+       username: "sajitharjun82@gmail.com"
+       password: "12a4GxjBvc][RX"
+       to: "prathyukprathap@gmail.com"
+       subject: Apache-status
+       body: " Apache is down"
+      delegate_to: localhost
